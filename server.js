@@ -27,11 +27,21 @@ app.use(cors({
 }));
 
 const transporter = nodemailer.createTransport({
-    service: 'gmail', // Це замінює ручне прописування порту і хоста
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
-    }
+    },
+    tls: {
+        rejectUnauthorized: false
+    },
+    // Оце може допомогти обійти таймаут на хостингах
+    connectionTimeout: 20000, 
+    greetingTimeout: 20000,
+    socketTimeout: 20000,
+    dnsTimeout: 10000
 });
 
 // Маршрут для "пробудження" сервера (пінг)
