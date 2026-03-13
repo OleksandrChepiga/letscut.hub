@@ -1,63 +1,45 @@
 const express = require('express');
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend'); 
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const app = express();
-app.set('trust proxy', 1); // Дозволяє правильно визначати IP на Render
+app.set('trust proxy', 1); 
+
+// Ініціалізація Resend
+const resend = new Resend(process.env.EMAIL_PASS); 
 
 // --- БЕЗПЕКА ---
 app.use(helmet()); 
 app.use(express.json());
 
-// Захист від спаму: макс 5 запитів за 15 хв з однієї IP
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 5,
     message: { success: false, error: "Занадто багато запитів. Спробуйте пізніше." }
 });
 
-// Налаштування CORS: дозволяємо тільки твій домен
 app.use(cors({
-    origin: '*', // Дозволяє запити з будь-якого домену (для тестування це найкраще)
+    origin: '*', 
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type']
 }));
 
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    },
-    tls: {
-        rejectUnauthorized: false
-    },
-    // Оце може допомогти обійти таймаут на хостингах
-    connectionTimeout: 20000, 
-    greetingTimeout: 20000,
-    socketTimeout: 20000,
-    dnsTimeout: 10000
-});
-
-// Маршрут для "пробудження" сервера (пінг)
 app.get('/ping', (req, res) => res.send('Server is awake!'));
 
 app.post('/send-order', limiter, async (req, res) => {
     const data = req.body;
     const orderDate = new Date().toLocaleString('uk-UA', { timeZone: 'Europe/Kyiv' });
 
-    // Валідація
+    // Валідація Email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!data.email || !emailRegex.test(data.email)) {
         return res.status(400).json({ success: false, error: 'Некоректний Email' });
     }
 
-    // --- ШАБЛОН ДЛЯ ТЕБЕ (АДМІН) ---
+    // --- ТВОЇ СТИЛІ ДЛЯ АДМІНА ---
     const adminHtml = `
     <div style="font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #333; width: 100%; max-width: 600px; margin: 20px auto; border: 1px solid #eee; border-radius: 12px; background-color: #ffffff; box-sizing: border-box; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
         <div style="background-color: #1a1a1a; padding: 25px 20px; text-align: left;">
@@ -130,7 +112,7 @@ app.post('/send-order', limiter, async (req, res) => {
         </div>
     </div>`;
 
-    // --- ШАБЛОН ДЛЯ КЛІЄНТА ---
+    // --- ТВОЇ СТИЛІ ДЛЯ КЛІЄНТА ---
     const clientHtml = `
     <!DOCTYPE html>
     <html>
@@ -180,16 +162,16 @@ app.post('/send-order', limiter, async (req, res) => {
     </html>`;
 
     try {
-        // Відправка обох листів
+        // ВІДПРАВКА ЧЕРЕЗ RESEND (Обох листів)
         await Promise.all([
-            transporter.sendMail({
-                from: `"let's cut CRM" <${process.env.EMAIL_USER}>`,
+            resend.emails.send({
+                from: 'Let\'s Cut CRM <onboarding@resend.dev>',
                 to: process.env.EMAIL_USER,
                 subject: `🚀 Нове замовлення: ${data.name} [${data.tariff}]`,
                 html: adminHtml
             }),
-            transporter.sendMail({
-                from: `"Alexander | let's cut" <${process.env.EMAIL_USER}>`,
+            resend.emails.send({
+                from: 'Alexander | Let\'s Cut <onboarding@resend.dev>',
                 to: data.email,
                 subject: `Ваше замовлення №${data.order_id} прийнято! ✨`,
                 html: clientHtml
@@ -198,10 +180,10 @@ app.post('/send-order', limiter, async (req, res) => {
 
         res.status(200).json({ success: true });
     } catch (error) {
-        console.error('SMTP Error:', error);
-        res.status(500).json({ success: false, error: 'Помилка поштового сервера' });
+        console.error('Resend API Error:', error);
+        res.status(500).json({ success: false, error: 'Помилка відправки через API' });
     }
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => console.log(`Backend Let's Cut online on port ${PORT}`));
