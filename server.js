@@ -31,10 +31,13 @@ const transporter = nodemailer.createTransport({
     service: 'gmail',
     host: 'smtp.gmail.com',
     port: 465,
-    secure: true,
+    secure: true, // обов'язково true для порту 465
     auth: {
-        user: process.env.EMAIL_USER, 
-        pass: process.env.EMAIL_PASS  
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    },
+    tls: {
+        rejectUnauthorized: false // допомагає уникнути проблем із сертифікатами на хостингу
     }
 });
 
