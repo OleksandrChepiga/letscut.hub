@@ -21,8 +21,8 @@ const limiter = rateLimit({
 
 // Налаштування CORS: дозволяємо тільки твій домен
 app.use(cors({
-    origin: ['https://letscut.com.ua', 'https://www.letscut.com.ua', 'https://letscut.onrender.com'],
-    methods: ['POST', 'GET'],
+    origin: '*', // Дозволяє запити з будь-якого домену (для тестування це найкраще)
+    methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type']
 }));
 
