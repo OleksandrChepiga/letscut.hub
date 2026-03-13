@@ -165,14 +165,15 @@ app.post('/send-order', limiter, async (req, res) => {
         // ВІДПРАВКА ЧЕРЕЗ RESEND (Обох листів)
         await Promise.all([
             resend.emails.send({
-                from: 'Let\'s Cut CRM <onboarding@resend.dev>',
+                from: 'Let\'s Cut CRM <info@letscut.com.ua>',
                 to: process.env.EMAIL_USER,
                 subject: `🚀 Нове замовлення: ${data.name} [${data.tariff}]`,
                 html: adminHtml
             }),
             resend.emails.send({
-                from: 'Alexander | Let\'s Cut <onboarding@resend.dev>',
+                from: 'Alexander | Let\'s Cut <info@letscut.com.ua>',
                 to: data.email,
+                reply_to: 'letscut.ua@gmail.com', // Відповіді клієнтів прийдуть на твій Gmail
                 subject: `Ваше замовлення №${data.order_id} прийнято! ✨`,
                 html: clientHtml
             })
@@ -187,4 +188,3 @@ app.post('/send-order', limiter, async (req, res) => {
 
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => console.log(`Backend Let's Cut online on port ${PORT}`));
-
