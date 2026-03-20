@@ -8,10 +8,8 @@ require('dotenv').config();
 const app = express();
 app.set('trust proxy', 1); 
 
-// Ініціалізація Resend
 const resend = new Resend(process.env.EMAIL_PASS); 
 
-// --- БЕЗПЕКА ---
 app.use(helmet()); 
 app.use(express.json());
 
@@ -39,141 +37,82 @@ app.post('/send-order', limiter, async (req, res) => {
         return res.status(400).json({ success: false, error: 'Некоректний Email' });
     }
 
-    // --- ТВОЇ СТИЛІ ДЛЯ АДМІНА ---
+    // --- СТИЛІ ТА ШРИФТИ ---
+    const fonts = "font-family: 'Manrope', 'Nunito', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;";
+
+    // --- ШАБЛОН ДЛЯ АДМІНІСТРАТОРА (ТЕБЕ) ---
     const adminHtml = `
-    <div style="font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #333; width: 100%; max-width: 600px; margin: 20px auto; border: 1px solid #eee; border-radius: 12px; background-color: #ffffff; box-sizing: border-box; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-        <div style="background-color: #1a1a1a; padding: 25px 20px; text-align: left;">
-            <table style="width: 100%; border-collapse: collapse;">
-                <tr>
-                    <td style="vertical-align: middle;">
-                        <h2 style="margin: 0; color: #ffffff; font-size: 18px; font-weight: 500;">Запит на монтаж відео</h2>
-                        <p style="margin: 6px 0 0; color: #888; font-size: 12px;">ID: ${data.order_id} | Час: ${orderDate}</p>
-                    </td>
-                    <td style="text-align: right; vertical-align: middle;">
-                        <span style="display: inline-block; background: #333; color: #eee; padding: 8px 16px; border-radius: 6px; font-size: 11px; border: 1px solid #444; white-space: nowrap; margin-left: 10px;">
-                            Нове замовлення
-                        </span>
-                    </td>
-                </tr>
-            </table>
-        </div>
-        <div style="padding: 25px;">
-            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-                <tbody>
-                    <tr>
-                        <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f5; color: #777; font-size: 14px;">Клієнт:</td>
-                        <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f5; text-align: right; font-weight: 600; font-size: 14px;">${data.name}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f5; color: #777; font-size: 14px;">Номер телефону:</td>
-                        <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f5; text-align: right; font-size: 14px;">
-                            <a href="tel:${data.phone}" style="color: #007bff; text-decoration: none; font-weight: 600;">${data.phone}</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f5; color: #777; font-size: 14px;">Електронна пошта:</td>
-                        <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f5; text-align: right; font-size: 14px;">
-                            <a href="mailto:${data.email}" style="color: #007bff; text-decoration: none;">${data.email}</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f5; color: #777; font-size: 14px;">Тариф:</td>
-                        <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f5; text-align: right; font-weight: 600; font-size: 14px;">${data.tariff}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f5; color: #777; font-size: 14px;">Музика:</td>
-                        <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f5; text-align: right; font-size: 14px;">${data.music || 'Не вказано'}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f5; color: #777; font-size: 14px;">Права:</td>
-                        <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f5; text-align: right; font-size: 14px;">${data.copyright_transfer}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f5; color: #777; font-size: 14px;">Дедлайн:</td>
-                        <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f5; text-align: right; color: #d9534f; font-weight: 700; font-size: 14px;">${data.deadline}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f5; color: #777; font-size: 14px;">Лінк:</td>
-                        <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f5; text-align: right; font-size: 14px; word-break: break-all;">
-                            <a href="${data.link}" target="_blank" style="color: #007bff; text-decoration: underline;">Відкрити матеріали</a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <div style="margin-top: 20px;">
-                <p style="margin: 0 0 10px 0; font-size: 13px; font-weight: 600; color: #1a1a1a;">Коментар до замовлення:</p>
-                <div style="padding: 15px; border: 1px solid #eee; background-color: #fafafa; color: #444; font-size: 14px; line-height: 1.5; border-radius: 8px;">
-                    ${data.message}
+    <div style="${fonts} background-color: #0a0a0a; color: #e0e0e0; padding: 40px 20px;">
+        <div style="max-width: 600px; margin: 0 auto; background: #141414; border: 1px solid #333; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.4);">
+            <div style="background: linear-gradient(90deg, #ff4d4d, #f9cb28); padding: 2px;">
+                <div style="background: #141414; padding: 25px; text-align: center;">
+                    <h2 style="margin: 0; color: #fff; text-transform: uppercase; letter-spacing: 2px; font-size: 18px;">Нове замовлення 🔥</h2>
+                    <p style="margin: 5px 0 0; color: #888; font-size: 12px;">ID: ${data.order_id} | ${orderDate}</p>
+                </div>
+            </div>
+            <div style="padding: 30px;">
+                <table style="width: 100%; border-collapse: collapse; color: #ccc; font-size: 14px;">
+                    <tr><td style="padding: 10px 0; border-bottom: 1px solid #222;">Клієнт:</td><td style="text-align: right; color: #fff; font-weight: 700;">${data.name}</td></tr>
+                    <tr><td style="padding: 10px 0; border-bottom: 1px solid #222;">Телефон:</td><td style="text-align: right;"><a href="tel:${data.phone}" style="color: #ff4d4d; text-decoration: none;">${data.phone}</a></td></tr>
+                    <tr><td style="padding: 10px 0; border-bottom: 1px solid #222;">Тариф:</td><td style="text-align: right; color: #f9cb28; font-weight: 700;">${data.tariff}</td></tr>
+                    <tr><td style="padding: 10px 0; border-bottom: 1px solid #222;">Дедлайн:</td><td style="text-align: right; color: #ff4d4d;">${data.deadline}</td></tr>
+                    <tr><td style="padding: 10px 0; border-bottom: 1px solid #222;">Права (+5%):</td><td style="text-align: right;">${data.copyright_transfer}</td></tr>
+                </table>
+                <div style="margin-top: 20px; padding: 15px; background: #1a1a1a; border-radius: 8px; border: 1px solid #333;">
+                    <p style="margin: 0 0 8px; font-size: 12px; color: #888; text-transform: uppercase;">ТЗ / Коментар:</p>
+                    <p style="margin: 0; color: #fff; line-height: 1.5;">${data.message}</p>
+                </div>
+                <div style="margin-top: 25px; text-align: center;">
+                    <a href="${data.link}" style="display: inline-block; padding: 14px 30px; background: #fff; color: #000; text-decoration: none; border-radius: 8px; font-weight: 800; text-transform: uppercase; font-size: 12px;">Переглянути матеріали</a>
                 </div>
             </div>
         </div>
-        <div style="background: #fdfdfd; padding: 15px; text-align: center; border-top: 1px solid #f5f5f5;">
-            <p style="margin: 0; font-size: 10px; color: #bbb;">© 2026 let's cut | CRM v1.0</p>
+    </div>`;
+
+    // --- ШАБЛОН ДЛЯ КЛІЄНТА (ПОВНИЙ) ---
+    const clientHtml = `
+    <div style="${fonts} background-color: #0a0a0a; color: #e0e0e0; padding: 40px 20px;">
+        <div style="max-width: 600px; margin: 0 auto; background: #141414; border: 1px solid #333; border-radius: 20px; overflow: hidden;">
+            <div style="padding: 40px 30px; text-align: center;">
+                <h1 style="color: #fff; margin: 0; font-size: 28px; font-weight: 800;">Let's Cut</h1>
+                <p style="color: #888; margin-top: 10px;">Вашу заявку №${data.order_id} отримано!</p>
+                
+                <div style="margin: 30px 0; padding: 25px; background: #1a1a1a; border-radius: 15px; text-align: left; border: 1px solid #222;">
+                    <h3 style="color: #fff; margin: 0 0 15px; font-size: 16px; border-bottom: 1px solid #333; padding-bottom: 10px;">Деталі вашого замовлення:</h3>
+                    <p style="margin: 8px 0; font-size: 14px;"><span style="color: #888;">Тариф:</span> <strong style="color: #f9cb28;">${data.tariff}</strong></p>
+                    <p style="margin: 8px 0; font-size: 14px;"><span style="color: #888;">Термін виконання:</span> <strong style="color: #fff;">${data.deadline}</strong></p>
+                    <p style="margin: 8px 0; font-size: 14px;"><span style="color: #888;">Музика:</span> <strong style="color: #fff;">${data.music || 'Без уточнення'}</strong></p>
+                    <p style="margin: 15px 0 5px; color: #888; font-size: 12px; text-transform: uppercase;">Ваше технічне завдання:</p>
+                    <p style="margin: 0; color: #ccc; font-style: italic; font-size: 14px; line-height: 1.6;">"${data.message}"</p>
+                </div>
+
+                <p style="color: #ccc; font-size: 15px; line-height: 1.6;">
+                    Я зв'яжуся з вами найближчим часом для підтвердження та уточнення деталей.
+                </p>
+
+                <div style="margin-top: 40px;">
+                    <a href="https://t.me/Oleksandr_Chepiha" style="display: inline-block; padding: 12px 20px; background: #24A1DE; color: #fff; text-decoration: none; border-radius: 10px; font-weight: 600; margin-right: 10px; font-size: 13px;">Написати в Telegram</a>
+                    <a href="https://letscut.com.ua" style="display: inline-block; padding: 12px 20px; background: #333; color: #fff; text-decoration: none; border-radius: 10px; font-weight: 600; font-size: 13px;">На сайт</a>
+                </div>
+            </div>
+            <div style="background: #1a1a1a; padding: 20px; text-align: center; border-top: 1px solid #222;">
+                <p style="margin: 0; font-size: 11px; color: #555;">© 2026 Let's Cut - Професійний відеомонтаж</p>
+            </div>
         </div>
     </div>`;
 
-    // --- ТВОЇ СТИЛІ ДЛЯ КЛІЄНТА ---
-    const clientHtml = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="UTF-8">
-        <style>
-            @media only screen and (max-width: 480px) {
-                .mobile-full-width { width: 100% !important; display: block !important; padding-bottom: 10px !important; }
-                .btn-stack { display: block !important; width: 100% !important; margin: 0 0 12px 0 !important; padding: 16px 0 !important; }
-            }
-        </style>
-    </head>
-    <body style="margin: 0; padding: 0; background-color: #f4f4f4;">
-    <div style="font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #333; width: 100%; max-width: 600px; margin: 20px auto; border-radius: 24px; background-color: #ffffff; box-shadow: 0 10px 30px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid #e7e7e7;">
-        <div style="background-color: #000; padding: 35px 20px; text-align: center; color: #ffffff;">
-            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.7; margin-bottom: 8px;">Нова заявка</div>
-            <h2 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 1px;">№ ${data.order_id}</h2>
-        </div>
-        <div style="padding: 35px 30px;">
-            <div style="text-align: center; margin-bottom: 35px;">
-                <h3 style="margin: 0; color: #000; font-size: 24px; font-weight: 700;">Замовлення прийнято! ✨</h3>
-                <p style="margin: 12px 0 0; color: #666; line-height: 1.6; font-size: 15px;">
-                    Дякуємо, що обрали <strong>let's cut</strong>. Я вже переглядаю ваші матеріали та готуюся до роботи.
-                </p>
-            </div>
-            <div style="background-color: #f9f9f9; border-radius: 18px; padding: 25px; border: 1px solid #eee;">
-                <table style="width: 100%; border-collapse: collapse;">
-                    <tr>
-                        <td class="mobile-full-width" style="padding: 8px 0; font-size: 13px; color: #888; width: 40%;">Тариф:</td>
-                        <td class="mobile-full-width" style="padding: 8px 0; font-size: 15px; color: #444; font-weight: 600;">${data.tariff}</td>
-                    </tr>
-                   <tr>
-                        <td class="mobile-full-width" style="padding: 8px 0; font-size: 13px; color: #888;">Термін:</td>
-                        <td class="mobile-full-width" style="padding: 8px 0; font-size: 15px; color: #444;">${data.deadline}</td>
-                    </tr>
-                </table>
-            </div>
-            <div style="margin-top: 30px; padding: 20px; border-left: 4px solid #000; background: #fafafa; border-radius: 0 12px 12px 0;">
-                <p style="margin: 0; font-size: 15px; color: #444; line-height: 1.7; font-style: italic;">"${data.message}"</p>
-            </div>
-            <div style="margin-top: 45px; text-align: center; border-top: 1px solid #eee; padding-top: 35px;">
-                <a class="btn-stack" style="text-decoration: none; color: #ffffff; background-color: #000000; font-weight: 600; font-size: 14px; padding: 16px 28px; border-radius: 14px; display: inline-block; margin: 0 6px;" href="https://letscut.com.ua">На головну</a>
-            </div>
-        </div>
-    </div>
-    </body>
-    </html>`;
-
     try {
-        // ВІДПРАВКА ЧЕРЕЗ RESEND (Обох листів)
         await Promise.all([
             resend.emails.send({
                 from: 'Let\'s Cut CRM <info@letscut.com.ua>',
                 to: process.env.EMAIL_USER,
-                subject: `🚀 Нове замовлення: ${data.name} [${data.tariff}]`,
+                subject: `🚀 ЗАМОВЛЕННЯ: ${data.name} [${data.tariff}]`,
                 html: adminHtml
             }),
             resend.emails.send({
                 from: 'Alexander | Let\'s Cut <info@letscut.com.ua>',
                 to: data.email,
-                reply_to: 'letscut.ua@gmail.com', // Відповіді клієнтів прийдуть на твій Gmail
+                reply_to: 'letscut.ua@gmail.com',
                 subject: `Ваше замовлення №${data.order_id} прийнято! ✨`,
                 html: clientHtml
             })
