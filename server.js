@@ -37,66 +37,77 @@ app.post('/send-order', limiter, async (req, res) => {
         return res.status(400).json({ success: false, error: 'Некоректний Email' });
     }
 
-    // --- СТИЛІ ТА ШРИФТИ ---
-    const fonts = "font-family: 'Manrope', 'Nunito', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;";
+    // --- СТИЛІ ТА ШРИФТИ (Manrope для заголовків, Nunito для тексту) ---
+    const fonts = "font-family: 'Manrope', 'Nunito', 'Segoe UI', Roboto, sans-serif;";
+    const mainColor = "#1a1a1a"; // Глибокий темний для тексту
+    const accentColor = "#ff4d4d"; // Твій червоний акцент
+    const bgColor = "#ffffff"; // Світла тема
 
     // --- ШАБЛОН ДЛЯ АДМІНІСТРАТОРА (ТЕБЕ) ---
     const adminHtml = `
-    <div style="${fonts} background-color: #0a0a0a; color: #e0e0e0; padding: 40px 20px;">
-        <div style="max-width: 600px; margin: 0 auto; background: #141414; border: 1px solid #333; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.4);">
-            <div style="background: linear-gradient(90deg, #ff4d4d, #f9cb28); padding: 2px;">
-                <div style="background: #141414; padding: 25px; text-align: center;">
-                    <h2 style="margin: 0; color: #fff; text-transform: uppercase; letter-spacing: 2px; font-size: 18px;">Нове замовлення 🔥</h2>
-                    <p style="margin: 5px 0 0; color: #888; font-size: 12px;">ID: ${data.order_id} | ${orderDate}</p>
-                </div>
+    <div style="${fonts} background-color: #f9f9f9; padding: 40px 20px; color: ${mainColor};">
+        <div style="max-width: 600px; margin: 0 auto; background: ${bgColor}; border: 1px solid #dddddd; border-radius: 12px; overflow: hidden;">
+            <div style="padding: 25px; border-bottom: 2px solid ${accentColor};">
+                <h2 style="margin: 0; font-size: 20px; font-weight: 800;">Нове замовлення 🔥</h2>
+                <p style="margin: 5px 0 0; color: #666; font-size: 13px;">ID: ${data.order_id} | ${orderDate}</p>
             </div>
             <div style="padding: 30px;">
-                <table style="width: 100%; border-collapse: collapse; color: #ccc; font-size: 14px;">
-                    <tr><td style="padding: 10px 0; border-bottom: 1px solid #222;">Клієнт:</td><td style="text-align: right; color: #fff; font-weight: 700;">${data.name}</td></tr>
-                    <tr><td style="padding: 10px 0; border-bottom: 1px solid #222;">Телефон:</td><td style="text-align: right;"><a href="tel:${data.phone}" style="color: #ff4d4d; text-decoration: none;">${data.phone}</a></td></tr>
-                    <tr><td style="padding: 10px 0; border-bottom: 1px solid #222;">Тариф:</td><td style="text-align: right; color: #f9cb28; font-weight: 700;">${data.tariff}</td></tr>
-                    <tr><td style="padding: 10px 0; border-bottom: 1px solid #222;">Дедлайн:</td><td style="text-align: right; color: #ff4d4d;">${data.deadline}</td></tr>
-                    <tr><td style="padding: 10px 0; border-bottom: 1px solid #222;">Права (+5%):</td><td style="text-align: right;">${data.copyright_transfer}</td></tr>
+                <table style="width: 100%; border-collapse: collapse; font-size: 15px;">
+                    <tr><td style="padding: 12px 0; border-bottom: 1px solid #eee; color: #666;">Клієнт:</td><td style="padding: 12px 0; border-bottom: 1px solid #eee; text-align: right; font-weight: 700;">${data.name}</td></tr>
+                    <tr><td style="padding: 12px 0; border-bottom: 1px solid #eee; color: #666;">Телефон:</td><td style="padding: 12px 0; border-bottom: 1px solid #eee; text-align: right;"><a href="tel:${data.phone}" style="color: ${accentColor}; text-decoration: none; font-weight: 700;">${data.phone}</a></td></tr>
+                    <tr><td style="padding: 12px 0; border-bottom: 1px solid #eee; color: #666;">Email:</td><td style="padding: 12px 0; border-bottom: 1px solid #eee; text-align: right;">${data.email}</td></tr>
+                    <tr><td style="padding: 12px 0; border-bottom: 1px solid #eee; color: #666;">Тариф:</td><td style="padding: 12px 0; border-bottom: 1px solid #eee; text-align: right; font-weight: 700;">${data.tariff}</td></tr>
+                    <tr><td style="padding: 12px 0; border-bottom: 1px solid #eee; color: #666;">Дедлайн:</td><td style="padding: 12px 0; border-bottom: 1px solid #eee; text-align: right; color: ${accentColor}; font-weight: 700;">${data.deadline}</td></tr>
+                    <tr><td style="padding: 12px 0; border-bottom: 1px solid #eee; color: #666;">Матеріали:</td><td style="padding: 12px 0; border-bottom: 1px solid #eee; text-align: right;"><a href="${data.link}" style="color: #007bff;">Відкрити лінк</a></td></tr>
                 </table>
-                <div style="margin-top: 20px; padding: 15px; background: #1a1a1a; border-radius: 8px; border: 1px solid #333;">
-                    <p style="margin: 0 0 8px; font-size: 12px; color: #888; text-transform: uppercase;">ТЗ / Коментар:</p>
-                    <p style="margin: 0; color: #fff; line-height: 1.5;">${data.message}</p>
-                </div>
-                <div style="margin-top: 25px; text-align: center;">
-                    <a href="${data.link}" style="display: inline-block; padding: 14px 30px; background: #fff; color: #000; text-decoration: none; border-radius: 8px; font-weight: 800; text-transform: uppercase; font-size: 12px;">Переглянути матеріали</a>
+                <div style="margin-top: 25px;">
+                    <p style="margin: 0 0 10px; font-weight: 700; font-size: 14px;">ТЗ від клієнта:</p>
+                    <div style="padding: 15px; background: #f5f5f5; border-radius: 8px; font-size: 14px; line-height: 1.6; border-left: 4px solid ${accentColor};">
+                        ${data.message}
+                    </div>
                 </div>
             </div>
         </div>
     </div>`;
 
-    // --- ШАБЛОН ДЛЯ КЛІЄНТА (ПОВНИЙ) ---
+    // --- ШАБЛОН ДЛЯ КЛІЄНТА (ПОВНИЙ І СВІТЛИЙ) ---
     const clientHtml = `
-    <div style="${fonts} background-color: #0a0a0a; color: #e0e0e0; padding: 40px 20px;">
-        <div style="max-width: 600px; margin: 0 auto; background: #141414; border: 1px solid #333; border-radius: 20px; overflow: hidden;">
-            <div style="padding: 40px 30px; text-align: center;">
-                <h1 style="color: #fff; margin: 0; font-size: 28px; font-weight: 800;">Let's Cut</h1>
-                <p style="color: #888; margin-top: 10px;">Вашу заявку №${data.order_id} отримано!</p>
-                
-                <div style="margin: 30px 0; padding: 25px; background: #1a1a1a; border-radius: 15px; text-align: left; border: 1px solid #222;">
-                    <h3 style="color: #fff; margin: 0 0 15px; font-size: 16px; border-bottom: 1px solid #333; padding-bottom: 10px;">Деталі вашого замовлення:</h3>
-                    <p style="margin: 8px 0; font-size: 14px;"><span style="color: #888;">Тариф:</span> <strong style="color: #f9cb28;">${data.tariff}</strong></p>
-                    <p style="margin: 8px 0; font-size: 14px;"><span style="color: #888;">Термін виконання:</span> <strong style="color: #fff;">${data.deadline}</strong></p>
-                    <p style="margin: 8px 0; font-size: 14px;"><span style="color: #888;">Музика:</span> <strong style="color: #fff;">${data.music || 'Без уточнення'}</strong></p>
-                    <p style="margin: 15px 0 5px; color: #888; font-size: 12px; text-transform: uppercase;">Ваше технічне завдання:</p>
-                    <p style="margin: 0; color: #ccc; font-style: italic; font-size: 14px; line-height: 1.6;">"${data.message}"</p>
-                </div>
+    <div style="${fonts} background-color: #ffffff; color: ${mainColor}; padding: 40px 20px; line-height: 1.6;">
+        <div style="max-width: 600px; margin: 0 auto; border: 1px solid #eeeeee; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+        
+            <div style="padding: 40px 30px; text-align: center; background-color: #fafafa;">
+                <h1 style="margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">Let's Cut</h1>
+                <p style="margin: 10px 0 0; color: #666; font-size: 14px;">Замовлення №${data.order_id} прийнято в роботу</p>
+            </div>
 
-                <p style="color: #ccc; font-size: 15px; line-height: 1.6;">
-                    Я зв'яжуся з вами найближчим часом для підтвердження та уточнення деталей.
+            <div style="padding: 30px;">
+                <p style="font-size: 16px;">Вітаю, <strong>${data.name}</strong>!</p>
+                <p style="font-size: 15px; color: #444;">
+                    Дякую за довіру! Я вже отримав ваше замовлення. Ось повна інформація, яку ви надіслали:
                 </p>
 
-                <div style="margin-top: 40px;">
-                    <a href="https://t.me/Oleksandr_Chepiha" style="display: inline-block; padding: 12px 20px; background: #24A1DE; color: #fff; text-decoration: none; border-radius: 10px; font-weight: 600; margin-right: 10px; font-size: 13px;">Написати в Telegram</a>
-                    <a href="https://letscut.com.ua" style="display: inline-block; padding: 12px 20px; background: #333; color: #fff; text-decoration: none; border-radius: 10px; font-weight: 600; font-size: 13px;">На сайт</a>
+                <div style="margin: 25px 0; padding: 20px; border: 1px solid #eee; border-radius: 12px;">
+                    <h3 style="margin: 0 0 15px; font-size: 15px; color: ${accentColor}; border-bottom: 1px solid #f5f5f5; padding-bottom: 10px;">Ваші дані:</h3>
+                    <p style="margin: 8px 0; font-size: 14px;"><strong>Обраний тариф:</strong> ${data.tariff}</p>
+                    <p style="margin: 8px 0; font-size: 14px;"><strong>Бажаний термін:</strong> ${data.deadline}</p>
+                    <p style="margin: 8px 0; font-size: 14px;"><strong>Музичний супровід:</strong> ${data.music || 'На мій вибір'}</p>
+                    <p style="margin: 8px 0; font-size: 14px;"><strong>Передача авторських прав:</strong> ${data.copyright_transfer}</p>
+                
+                    <p style="margin: 15px 0 5px; font-size: 13px; color: #888; text-transform: uppercase; font-weight: 700;">Ваше технічне завдання:</p>
+                    <p style="margin: 0; font-size: 14px; background: #fcfcfc; padding: 10px; border-radius: 6px; border: 1px dashed #ddd;">${data.message}</p>
+                </div>
+
+                <p style="font-size: 14px; color: #666;">
+                    <strong>Що далі?</strong> Я перевірю ваші матеріали за посиланням. Якщо виникнуть додаткові питання — я напишу вам у Telegram або зателефоную за номером <strong>${data.phone}</strong>.
+                </p>
+
+                <div style="margin-top: 35px; text-align: center;">
+                    <a href="https://t.me/Oleksandr_Chepiha" style="display: inline-block; background-color: ${mainColor}; color: #ffffff; padding: 14px 25px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 14px;">Зв'язатися зі мною</a>
                 </div>
             </div>
-            <div style="background: #1a1a1a; padding: 20px; text-align: center; border-top: 1px solid #222;">
-                <p style="margin: 0; font-size: 11px; color: #555;">© 2026 Let's Cut - Професійний відеомонтаж</p>
+    
+            <div style="padding: 20px; background-color: #fafafa; text-align: center; border-top: 1px solid #eeeeee;">
+                <p style="margin: 0; font-size: 11px; color: #999;">© 2026 Let's Cut | Олександр Чепіга</p>
             </div>
         </div>
     </div>`;
