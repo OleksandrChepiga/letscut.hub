@@ -121,16 +121,16 @@ app.post('/send-order', limiter, async (req, res) => {
     try {
         await Promise.all([
             resend.emails.send({
-                from: "Let's Cut CRM <info@letscut.com.ua>",
+                from: "Let's Cut | Notification <letscut.ua@gmail.com>",
                 to: process.env.EMAIL_USER,
-                subject: `🚀 ЗАМОВЛЕННЯ: ${data.name} [${data.tariff}]`,
+                subject: `Замовлення: ${data.name} [${data.tariff}]`,
                 html: adminHtml
             }),
             resend.emails.send({
-                from: "Alexander | Let's Cut <info@letscut.com.ua>",
+                from: " Let's Cut | Offical <letscut.ua@gmail.com>",
                 to: data.email,
                 reply_to: 'letscut.ua@gmail.com',
-                subject: `Ваше замовлення №${data.order_id} прийнято! ✨`,
+                subject: `Ваше замовлення №${data.order_id} прийнято`,
                 html: clientHtml
             })
         ]);
