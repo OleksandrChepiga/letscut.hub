@@ -88,32 +88,32 @@ app.post('/send-order', limiter, async (req, res) => {
     <div style="${fonts} background-color: #ffffff; color: ${mainColor}; padding: 20px 10px; line-height: 1.6;">
         <div style="max-width: 500px; margin: 0 auto; border: 1px solid #eeeeee; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
             <div style="padding: 30px 20px; text-align: center; background-color: #fafafa; border-bottom: 1px solid #eeeeee;">
-                <h1 style="margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.5px;">Let's Cut</h1>
-                <p style="margin: 10px 0 0; color: #666; font-size: 13px;">Замовлення №${data.order_id} прийнято</p>
+                <h1 style="margin: 0; font-size: 28px; font-weight: 700; font-family: 'Montserrat', sans-serif; letter-spacing: -0.5px;">Let's Cut</h1>
+                <p style="margin: 10px 0 0; color: #666; font-size: 14px; font-family: 'Montserrat', sans-serif;">Замовлення №${data.order_id} прийнято</p>
             </div>
             <div style="padding: 20px;">
-                <p style="font-size: 15px; margin-bottom: 15px;">Вітаю, <strong>${data.name}</strong>! Дякую за замовлення. Ось деталі вашої заявки:</p>
+                <p style="text-align: center; font-size: 14px; margin-bottom: 15px; font-family: 'Onest', sans-serif; font-weight: 300">Шановний <strong>${data.name}</strong>, за вашою поштою було замовлено відеомонтаж на сайті сервісу Let's Cut (letscut.com.ua) Дякую за замовлення. Ось деталі вашої заявки:</p>
                 <div style="margin-bottom: 25px; padding: 15px; border: 1px solid #f0f0f0; border-radius: 12px; background-color: #fcfcfc;">
                     <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-                        <tr><td style="padding: 10px 0; border-bottom: 1px solid #eee; color: #888;">Тариф:</td><td style="padding: 10px 0; border-bottom: 1px solid #eee; font-weight: 700; text-align: right;">${data.tariff}</td></tr>
-                        <tr><td style="padding: 10px 0; border-bottom: 1px solid #eee; color: #888;">Додатково:</td><td style="padding: 10px 0; border-bottom: 1px solid #eee; font-weight: 700; text-align: right; color: ${accentColor};">${extraServiceText}</td></tr>
-                        <tr><td style="padding: 10px 0; border-bottom: 1px solid #eee; color: #888;">Дедлайн:</td><td style="padding: 10px 0; border-bottom: 1px solid #eee; font-weight: 700; text-align: right;">${data.deadline}</td></tr>
-                        <tr><td style="padding: 10px 0; border-bottom: 1px solid #eee; color: #888;">Телефон:</td><td style="padding: 10px 0; border-bottom: 1px solid #eee; font-weight: 700; text-align: right;">${data.phone}</td></tr>
-                        <tr><td style="padding: 10px 0; border-bottom: 1px solid #eee; color: #888;">Email:</td><td style="padding: 10px 0; border-bottom: 1px solid #eee; font-weight: 700; text-align: right; word-break: break-all;">${data.email}</td></tr>
-                        <tr><td style="padding: 10px 0; border-bottom: 1px solid #eee; color: #888;">Музика:</td><td style="padding: 10px 0; border-bottom: 1px solid #eee; font-weight: 700; text-align: right;">${data.music || 'На мій вибір'}</td></tr>
-                        <tr><td style="padding: 10px 0; color: #888;">Матеріали:</td><td style="padding: 10px 0; font-weight: 700; text-align: right; word-break: break-all;"><a href="${data.link}" style="color: ${accentColor}; text-decoration: underline;">Відкрити лінк 🔗</a></td></tr>
+                        <tr><td style="padding: 10px 0; border-bottom: 1px solid #eee; color: #888; font-family: 'Montserrat', sans-serif; font-weight: 500;">Тариф:</td><td style="padding: 10px 0; border-bottom: 1px solid #eee; font-weight: 500; text-align: right; color: #6E05B9; font-family: 'Onest', sans-serif;">${data.tariff}</td></tr>
+                        <tr><td style="padding: 10px 0; border-bottom: 1px solid #eee; color: #888; font-family: 'Montserrat', sans-serif; font-weight: 500;">Додатково:</td><td style="padding: 10px 0; border-bottom: 1px solid #eee; font-weight: 500; text-align: right; color: ${accentColor}; color: #6E05B9; font-family: 'Onest', sans-serif;">${extraServiceText}</td></tr>
+                        <tr><td style="padding: 10px 0; border-bottom: 1px solid #eee; color: #888; font-family: 'Montserrat', sans-serif; font-weight: 500;">Терміновість:</td><td style="padding: 10px 0; border-bottom: 1px solid #eee; font-weight: 500; text-align: right; color: #6E05B9; font-family: 'Onest', sans-serif;">${data.deadline}</td></tr>
+                        <tr><td style="padding: 10px 0; border-bottom: 1px solid #eee; color: #888; font-family: 'Montserrat', sans-serif; font-weight: 500;">Телефон:</td><td style="padding: 10px 0; border-bottom: 1px solid #eee; font-weight: 500; text-align: right; color: #6E05B9; font-family: 'Onest', sans-serif;">${data.phone}</td></tr>
+                        <tr><td style="padding: 10px 0; border-bottom: 1px solid #eee; color: #888; font-family: 'Montserrat', sans-serif; font-weight: 500;">Email:</td><td style="padding: 10px 0; border-bottom: 1px solid #eee; font-weight: 500; text-align: right; word-break: break-all; color: #6E05B9; font-family: 'Onest', sans-serif;">${data.email}</td></tr>
+                        <tr><td style="padding: 10px 0; border-bottom: 1px solid #eee; color: #888; font-family: 'Montserrat', sans-serif; font-weight: 500;">Музика:</td><td style="padding: 10px 0; border-bottom: 1px solid #eee; font-weight: 500; text-align: right; color: #6E05B9; font-family: 'Onest', sans-serif;">${data.music}</td></tr>
+                        <tr><td style="padding: 10px 0; color: #888; font-family: 'Montserrat', sans-serif; font-weight: 500;">Матеріали:</td><td style="padding: 10px 0; font-weight: 500; text-align: right; word-break: break-all;"><a href="${data.link}" style="color: ${accentColor}; text-decoration: underline; font-family: 'Onest', sans-serif;">${data.link}</a></td></tr>
                     </table>
                     <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
-                        <p style="margin: 0 0 5px; font-size: 11px; color: #999; font-weight: 700;">ВАШЕ ПОВІДОМЛЕННЯ:</p>
-                        <div style="font-size: 13px; color: #555; background: #ffffff; padding: 10px; border-radius: 6px; border: 1px solid #eee;">"${data.message}"</div>
+                        <p style="margin: 0 0 5px; font-size: 13px; color: #999; font-weight: 500; font-family: 'Montserrat', sans-serif;">Детальний опис задачі:</p>
+                        <div style="font-size: 13px; color: #555; background: #ffffff; padding: 10px; border-radius: 6px; border: 1px solid #eee; font-family: 'Onest', sans-serif;" >${data.message}</div>
                     </div>
                 </div>
                 <div style="text-align: center;">
-                    <a href="https://t.me/Oleksandr_Chepiha" style="display: block; background-color: ${mainColor}; color: #ffffff; padding: 14px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 14px;">Написати в Telegram</a>
+                    <a href="https://t.me/Oleksandr_Chepiha" style="display: block; background-color: #6E05B9; color: #ffffff; padding: 14px; border-radius: 10px; text-decoration: none; font-weight: 600; font-family: 'Montserrat', sans-serif;font-size: 18px;">Зв'язатися в Telegram</a>
                 </div>
             </div>
             <div style="padding: 15px; background-color: #fafafa; text-align: center; border-top: 1px solid #eeeeee;">
-                <p style="margin: 0; font-size: 10px; color: #bbb;">© 2026 Let's Cut | Олександр Чепіга</p>
+                <p style="margin: 0; font-size: 12px; color: #bbb; font-family: 'Onest', sans-serif;">©2026 Let's Cut | Чепіга Олександр Васильович</p>
             </div>
         </div>
     </div>`;
