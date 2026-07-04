@@ -127,7 +127,7 @@ app.post('/send-order', limiter, async (req, res) => {
                 html: adminHtml
             }),
             resend.emails.send({
-                from: " Let's Cut | Сповіщення <info@letscut.com.ua>",
+                from: "Let's Cut | Сповіщення <info@letscut.com.ua>",
                 to: data.email,
                 reply_to: 'letscut.ua@gmail.com',
                 subject: `Ваше замовлення №${data.order_id} прийнято`,
